@@ -1,0 +1,30 @@
+{
+  "name": "phonebook3",
+  "version": "1.0.0",
+  "description": "Backend development for a phonebook app",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/appsincaps/fullstack_part3.git"
+  },
+  "keywords": [
+    "backend"
+  ],
+  "author": "appsincaps",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/appsincaps/fullstack_part3/issues"
+  },
+  "homepage": "https://github.com/appsincaps/fullstack_part3#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  }
+}
