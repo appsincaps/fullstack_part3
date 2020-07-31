@@ -1,5 +1,6 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 const app = express()
 
 let persons = [
@@ -17,6 +18,7 @@ morgan.token('body', req => {
 
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
+app.use(cors())
 
 app.get('/', (req, res) => {
   res.send('<h1>Phonebook server running</h1>')
@@ -59,7 +61,7 @@ app.post('/api/persons', (req, res) => {
                       id:     Math.ceil(Math.random() * 1000000 + 4)
                     }
     persons.push(person)
-    res.json(persons)
+    res.json(person)
   }
 })
 
