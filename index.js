@@ -21,7 +21,7 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 app.use(cors())
 
 app.get('/', (req, res) => {
-  res.send('<h1>Phonebook server running</h1>')
+  res.send(`<h1>Phonebook server running on port ${PORT}</h1>`)
 })
 
 app.get('/info', (req, res) => {
