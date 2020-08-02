@@ -1,7 +1,9 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
+const Person = require('./models/person')
 
 let persons = [
   { name: 'Arto Hellas', number: '040-123456', id: 1 },
@@ -35,36 +37,32 @@ app.get('/info', (req, res) => {
 })
 
 app.get('/api/persons', (req, res) => {
-  res.json(persons)
+  Person.find({}).then(persons => {
+    res.json(persons)
+  })
 })
 
 app.get('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  const person = persons.find(person => person.id === id)
-  if (person) {
+  const id = req.params.id
+  Person.findById(id).then(person => {
     res.json(person)
-  } else {
-    res.status(404).end('<div>No resource found</div>')
-  }
+  })
 })
 
 app.post('/api/persons', (req, res) => {
 
-  if (!req.body.name || !req.body.number) {
+  const name = req.body.name
+  const number = req.body.number
+
+  if (!name || !number) {
     res.status(400).json({
       error: 'Name or number missing'
     })
-  } else if ( persons.find(person => person.name === req.body.name)) {
-    res.status(400).json({
-      error: 'Name must be unique'
-    })
   } else {
-    const person = {  name:   req.body.name,
-                      number: req.body.number,
-                      id:     Math.ceil(Math.random() * 1000000 + 4)
-                    }
-    persons.push(person)
-    res.json(person)
+    const person = new Person ({ name, number })
+    person.save().then( savedPerson => {
+      res.json(savedPerson)
+    })
   }
 })
 
