@@ -5,12 +5,14 @@ const cors = require('cors')
 const app = express()
 const Person = require('./models/person')
 
+/*
 let persons = [
   { name: 'Arto Hellas', number: '040-123456', id: 1 },
   { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
   { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
   { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
 ]
+*/
 
 morgan.token('body', req => {
   const body = {  name: req.body.name,
@@ -42,11 +44,16 @@ app.get('/api/persons', (req, res) => {
   })
 })
 
-app.get('/api/persons/:id', (req, res) => {
+app.get('/api/persons/:id', (req, res, next) => {
   const id = req.params.id
   Person.findById(id).then(person => {
-    res.json(person)
+    if (person) {
+      res.json(person)
+    } else {
+      res.status(404).end()
+    }
   })
+  .catch(error => next(error))
 })
 
 app.post('/api/persons', (req, res) => {
@@ -66,11 +73,31 @@ app.post('/api/persons', (req, res) => {
   }
 })
 
-app.delete('/api/persons/:id', (req, res) => {
-  const id = Number(req.params.id)
-  persons = persons.filter(person => person.id !== id)
-  res.status(204).end()
+app.delete('/api/persons/:id', (req, res, next) => {
+  const id = req.params.id
+  Person.findByIdAndDelete(id).then( () => {
+    res.status(204).end
+  })
+  .catch(error => next(error))
 })
+
+const unknownEndpoint = (req, res) => {
+  res.status(404).send({ error: 'unknown endpoint' })
+}
+
+app.use(unknownEndpoint)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
