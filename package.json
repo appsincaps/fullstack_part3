@@ -7,6 +7,7 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "build:ui": "rm -rf build && cd ../github/part2/phonebook && npm run build --prod && cp -r build ../../../github3/build",
+    "deploy": "git push heroku master",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
