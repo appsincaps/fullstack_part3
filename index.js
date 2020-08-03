@@ -21,9 +21,9 @@ morgan.token('body', req => {
 })
 
 app.use(express.static('build'))
+app.use(cors())
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
-app.use(cors())
 
 /*
 app.get('/', (req, res) => {
@@ -56,7 +56,7 @@ app.get('/api/persons/:id', (req, res, next) => {
   .catch(error => next(error))
 })
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
 
   const name = req.body.name
   const number = req.body.number
@@ -66,11 +66,38 @@ app.post('/api/persons', (req, res) => {
       error: 'Name or number missing'
     })
   } else {
-    const person = new Person ({ name, number })
-    person.save().then( savedPerson => {
-      res.json(savedPerson)
+    Person.find({}).then(persons => {
+      let person = { name, number }
+      const listed = persons.find(person=>person.name === name)
+      if (listed) {
+        Person.findByIdAndUpdate(listed.id, person, { new: true })
+          .then(updatedPerson => {
+            res.json(updatedPerson)
+          })
+          .catch(error=>next(error))
+      } else {
+        person = new Person (person)
+        person.save().then( savedPerson => {
+          res.json(savedPerson)
+        })
+      }
     })
   }
+})
+
+
+app.put('/api/persons/:id', (req, res, next) => {
+  const id = req.params.id
+  const name = req.body.name
+  const number = req.body.number
+  const person = { name, number }
+
+  Person.findByIdAndUpdate(id, person, { new: true })
+    .then(updatedPerson => {
+      console.log(req.body, updatedPerson)
+      res.json(updatedPerson)
+    })
+    .catch(error=>next(error))
 })
 
 app.delete('/api/persons/:id', (req, res, next) => {
