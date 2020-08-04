@@ -6,8 +6,7 @@ const app = express()
 const Person = require('./models/person')
 
 morgan.token('body', req => {
-  const body = {  name: req.body.name,
-                  number: req.body.number }
+  const body = {  name: req.body.name, number: req.body.number }
   return JSON.stringify(body)
 })
 
@@ -23,7 +22,6 @@ app.get('/info', (req, res) => {
               <p>${new Date().toString()}</p>
             </div>`)
   })
-  
 })
 
 app.get('/api/persons', (req, res) => {
@@ -34,38 +32,21 @@ app.get('/api/persons', (req, res) => {
 
 app.get('/api/persons/:id', (req, res, next) => {
   const id = req.params.id
-  Person.findById(id).then(person => {
-    if (person) {
-      res.json(person)
-    } else {
-      res.status(404).end()
-    }
-  })
-  .catch(error => next(error))
+  Person.findById(id)
+    .then(person => {
+      if (person) {
+        res.json(person)
+      } else {
+        res.status(404).end()
+      }
+    })
+    .catch(error => next(error))
 })
 
 app.post('/api/persons', (req, res, next) => {
 
   const name = req.body.name
   const number = req.body.number
-  /*
-  Person.find({}).then(persons => {
-    let person = { name, number }
-    const listed = persons.find(person=>person.name === name)
-    if (listed) {
-      Person.findByIdAndUpdate(listed.id, person, { new: true })
-        .then(updatedPerson => {
-          res.json(updatedPerson)
-        })
-        .catch(error=>next(error))
-    } else {
-      person = new Person (person)
-      person.save().then( savedPerson => {
-        res.json(savedPerson)
-      })
-    }
-  })
-  */
   const person = new Person ({ name, number })
   person.save()
     .then( savedPerson => {
@@ -83,15 +64,16 @@ app.put('/api/persons/:id', (req, res, next) => {
     .then(updatedPerson => {
       res.json(updatedPerson)
     })
-    .catch(error=>next(error))
+    .catch( error => next(error) )
 })
 
 app.delete('/api/persons/:id', (req, res, next) => {
   const id = req.params.id
-  Person.findByIdAndDelete(id).then( () => {
-    res.status(204).end()
-  })
-  .catch(error => next(error))
+  Person.findByIdAndDelete(id)
+    .then( () => {
+      res.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 const unknownEndpoint = (req, res) => {
